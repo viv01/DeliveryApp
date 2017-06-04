@@ -4,26 +4,26 @@
     android:layout_height="match_parent">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context="co.digitaldec.vivydv.deliveryapp.AddConsignment" />
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context="co.digitaldec.vivydv.deliveryapp.AddConsignment" />
 
     <Button android:id="@+id/addconsignmentbtn"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="ADD"
+        android:text="NAVIGATE"
         android:textColor="#FFF"
         android:background="#000"
-        android:layout_gravity="center_horizontal|bottom" />
+        android:layout_gravity="bottom" />
 
-    <EditText
+    <TextView
         android:layout_width="320dp"
         android:layout_height="55dp"
-        android:hint="ENTER CONSIGNEE NAME"
+        android:text="VIVEK"
         android:textColor="#FFF"
         android:background="#000"
         android:textColorHint="#FFF"

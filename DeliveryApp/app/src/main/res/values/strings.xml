@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">DeliveryApp</string>
-    <string name="title_activity_add_consignment">Map</string>
+    <string name="title_activity_add_consignment">Add</string>
+    <string name="title_activity_view_consignment">View</string>
 </resources>
