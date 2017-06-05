@@ -1,11 +1,11 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <fragment
         android:id="@+id/place_autocomplete_fragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -15,6 +15,7 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_below="@+id/place_autocomplete_fragment"
     tools:context="co.digitaldec.vivydv.deliveryapp.AddConsignment" />
 
     <Button android:id="@+id/addconsignmentbtn"
@@ -23,7 +24,10 @@
         android:text="ADD"
         android:textColor="#FFF"
         android:background="#000"
-        android:layout_gravity="center_horizontal|bottom" />
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="320dp"
@@ -32,8 +36,10 @@
         android:textColor="#FFF"
         android:background="#000"
         android:textColorHint="#FFF"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="34dp"
         android:id="@+id/consignee_name"
-        android:layout_gravity="center_horizontal|top" />
+        android:layout_gravity="center_horizontal|top"
+        android:layout_below="@+id/place_autocomplete_fragment"
+        android:layout_centerHorizontal="true" />
 
-</FrameLayout>
+</RelativeLayout>
