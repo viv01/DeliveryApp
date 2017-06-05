@@ -3,6 +3,7 @@ package co.digitaldec.vivydv.deliveryapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 
@@ -49,7 +50,7 @@ public class HomeScreen extends AppCompatActivity {
         listview.setOnItemClickListener (new AdapterView.OnItemClickListener(){
             public void onItemClick(AdapterView<?> parent, View view, int position, long id){
                 // Start AddConsignment activity
-                Intent myIntent = new Intent(HomeScreen.this,AddConsignment.class);
+                Intent myIntent = new Intent(HomeScreen.this,ViewConsignment.class);
                 startActivity(myIntent);
             }
         });
@@ -58,11 +59,10 @@ public class HomeScreen extends AppCompatActivity {
         addconsignment.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Start AViewConsignment activity
-                Intent myIntent = new Intent(HomeScreen.this,ViewConsignment.class);
+                Intent myIntent = new Intent(HomeScreen.this,AddConsignment.class);
                 startActivity(myIntent);
             }
         });
-
     }
 
 
