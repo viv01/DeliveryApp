@@ -17,13 +17,17 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -43,8 +47,10 @@ public class AddConsignment extends FragmentActivity implements OnMapReadyCallba
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     Marker mCurrLocationMarker;
+    Marker mDestLocationMarker;
     LocationRequest mLocationRequest;
     private GoogleMap mMap;
+    LatLng destinationlatlng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +59,7 @@ public class AddConsignment extends FragmentActivity implements OnMapReadyCallba
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Boolean locationpermission = checkLocationPermission();
             if(locationpermission == true){
-
+                //TODO Show dialog if location is off to turn on location
             }else{
 
             }
@@ -61,6 +67,17 @@ public class AddConsignment extends FragmentActivity implements OnMapReadyCallba
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        /**autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                destinationlatlng=place.getLatLng();
+            }
+
+            @Override
+            public void onError(Status status) {
+
+            }
+        });**/
     }
 
     private void buildAlertMessageNoGps() {
@@ -85,9 +102,8 @@ public class AddConsignment extends FragmentActivity implements OnMapReadyCallba
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         UiSettings settings = mMap.getUiSettings();
-        settings.setAllGesturesEnabled(false);
         settings.setMyLocationButtonEnabled(false);
-        settings.setZoomControlsEnabled(false);
+
         mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
         //Initialize Google Play Services
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -129,24 +145,13 @@ public class AddConsignment extends FragmentActivity implements OnMapReadyCallba
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
-//Showing Current Location Marker on Map
+        //Showing Current Location Marker on Map
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
-        LocationManager locationManager = (LocationManager)
-                getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         String provider = locationManager.getBestProvider(new Criteria(), true);
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            // ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            // public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            // int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         Location locations = locationManager.getLastKnownLocation(provider);
@@ -154,18 +159,15 @@ public class AddConsignment extends FragmentActivity implements OnMapReadyCallba
         if (null != locations && null != providerList && providerList.size() > 0) {
             double longitude = locations.getLongitude();
             double latitude = locations.getLatitude();
-            Geocoder geocoder = new Geocoder(getApplicationContext(),
-                    Locale.getDefault());
+            Geocoder geocoder = new Geocoder(getApplicationContext(),Locale.getDefault());
             try {
-                List<Address> listAddresses = geocoder.getFromLocation(latitude,
-                        longitude, 1);
+                List<Address> listAddresses = geocoder.getFromLocation(latitude,longitude, 1);
                 if (null != listAddresses && listAddresses.size() > 0) {
                     // Here we are finding , whatever we want our marker to show when clicked
                     String state = listAddresses.get(0).getAdminArea();
                     String country = listAddresses.get(0).getCountryName();
                     String subLocality = listAddresses.get(0).getSubLocality();
-                    markerOptions.title("" + latLng + "," + subLocality + "," + state
-                            + "," + country);
+                    markerOptions.title("" + latLng + "," + subLocality + "," + state + "," + country);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -173,13 +175,19 @@ public class AddConsignment extends FragmentActivity implements OnMapReadyCallba
         }
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
         mCurrLocationMarker = mMap.addMarker(markerOptions);
+
+        MarkerOptions markerOptions1 = new MarkerOptions();
+        markerOptions1.position(new LatLng(12.9760, 80.2212));
+        //markerOptions1.position(destinationlatlng);
+        markerOptions1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        mDestLocationMarker = mMap.addMarker(markerOptions1);
+
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
         //this code stops location updates
         if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient,
-                    this);
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient,this);
         }
     }
     @Override
@@ -189,10 +197,6 @@ public class AddConsignment extends FragmentActivity implements OnMapReadyCallba
         if (ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Asking user if explanation is needed
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.ACCESS_FINE_LOCATION)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                //Prompt the user once explanation has been shown
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},MY_PERMISSIONS_REQUEST_LOCATION);
             } else {
                 // No explanation needed, we can request the permission.
