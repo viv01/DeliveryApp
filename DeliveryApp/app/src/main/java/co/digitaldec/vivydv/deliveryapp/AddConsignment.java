@@ -28,6 +28,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -35,6 +36,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
@@ -67,17 +69,45 @@ public class AddConsignment extends FragmentActivity implements OnMapReadyCallba
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-        /**autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
                 destinationlatlng=place.getLatLng();
+                MarkerOptions markerOptions1 = new MarkerOptions();
+                if(destinationlatlng==null){
+                    markerOptions1.position(new LatLng(12.9760, 80.2212));
+                }else{
+                    markerOptions1.position(destinationlatlng);
+                }
+
+                markerOptions1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                if (mDestLocationMarker != null) {
+                    mDestLocationMarker.remove();
+                }
+                mDestLocationMarker = mMap.addMarker(markerOptions1);
+
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+                // to show all markers on screen -----------------
+                //the include method will calculate the min and max bound.
+                builder.include(mCurrLocationMarker.getPosition());
+                builder.include(mDestLocationMarker.getPosition());
+                LatLngBounds bounds = builder.build();
+
+                int width = getResources().getDisplayMetrics().widthPixels;
+                int height = getResources().getDisplayMetrics().heightPixels;
+                int padding = (int) (width * 0.40); // offset from edges of the map 10% of screen
+
+                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
+
+                mMap.animateCamera(cu);
             }
 
             @Override
             public void onError(Status status) {
 
             }
-        });**/
+        });
     }
 
     private void buildAlertMessageNoGps() {
@@ -175,12 +205,6 @@ public class AddConsignment extends FragmentActivity implements OnMapReadyCallba
         }
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
         mCurrLocationMarker = mMap.addMarker(markerOptions);
-
-        MarkerOptions markerOptions1 = new MarkerOptions();
-        markerOptions1.position(new LatLng(12.9760, 80.2212));
-        //markerOptions1.position(destinationlatlng);
-        markerOptions1.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-        mDestLocationMarker = mMap.addMarker(markerOptions1);
 
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
